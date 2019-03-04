@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
     "burnt",
     "slices",
     "mac_and_cheese",
-    "donald_trumpface"
+    "donald_trump_face"
   ];
 
   var compThinks = wordPool[Math.floor(Math.random() * wordPool.length)];
@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var l = document.getElementById("losses");
   var x = document.getElementById("guessleft");
   var g = document.getElementById("lettersguessed");
+  var d = document.getElementById("display");
   var f = document.getElementById("feedback");
 
   // varaiables for gameplay
@@ -32,17 +33,22 @@ document.addEventListener("DOMContentLoaded", function() {
   var triedLetters = [];
   var inThere = [];
   var indexes = [];
-  //   k= 1 triggers reset
-  var k = 0;
+  var displayWord = [];
   w.innerText = myWins;
   l.innerText = myLosses;
 
   function reset() {
+    k = false;
     guessesLeft = 9;
     triedLetters = [];
-    k = false;
     g.innerText = triedLetters.join();
     x.innerText = guessesLeft;
+    displayWord = [];
+
+    var compThinks = wordPool[Math.floor(Math.random() * wordPool.length)];
+    console.log(compThinks);
+    workingWord = compThinks.split("");
+    displayIt();
   }
   function polyIndex(searchArray, letterValue) {
     for (var i = 0; i <= searchArray.length; i++) {
@@ -54,9 +60,20 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     return indexes;
   }
+
   var workingWord = compThinks.split("");
   // display spaces automatically and hide letters with dashes
-
+  function displayIt() {
+    for (i = 0; i < workingWord.length; i++) {
+      if (workingWord[i] != "_") {
+        displayWord.push("#");
+      } else {
+        displayWord.push("_");
+      }
+    }
+    d.innerText = displayWord.join("");
+  }
+  displayIt();
   //   keyupevent
   document.onkeyup = function(event) {
     // input validator
@@ -64,15 +81,42 @@ document.addEventListener("DOMContentLoaded", function() {
     if (myAscii <= 90 && myAscii >= 65) {
       myAscii = myAscii + 32;
     }
-    if (!(myAscii >= 97 && myAscii <= 122)) {
+
+    if (!(myAscii == 16) && !(myAscii >= 97 && myAscii <= 122)) {
       f.innerText = "We only accept letters in hangman!";
     }
     // check if myLetter is in compThinks
     myLetter = String.fromCharCode(myAscii);
-    console.log(myLetter);
     inThere = polyIndex(workingWord, myLetter);
-    console.log(inThere);
     // do the thing
+    if (inThere != -1) {
+      for (i = 0; i < inThere.length; i++) {
+        z = inThere[i];
+        console.log(z);
+
+        displayWord[z] = workingWord[z];
+        d.innerText = displayWord.join("");
+        // not working below
+        if (displayWord == workingWord) {
+          myWins++;
+          w.innerHTML = myWins;
+          f.innerHTML = "you win, play again";
+          reset();
+        }
+      }
+    } else if (inThere == -1) {
+      guessesLeft--;
+      x.innerHTML = guessesLeft;
+      triedLetters.push(myLetter);
+      g.innerText = triedLetters;
+      if (guessesLeft == 0) {
+        myLosses++;
+        l.innerHTML = myLosses;
+        f.innerHTML = "you lose, try again";
+        reset();
+      }
+    }
+
     // reset indexes
     indexes = [];
   };
