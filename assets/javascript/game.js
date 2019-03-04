@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", function() {
   l.innerText = myLosses;
 
   function reset() {
-    k = false;
     guessesLeft = 9;
     triedLetters = [];
     g.innerText = triedLetters.join();
@@ -88,16 +87,20 @@ document.addEventListener("DOMContentLoaded", function() {
     // check if myLetter is in compThinks
     myLetter = String.fromCharCode(myAscii);
     inThere = polyIndex(workingWord, myLetter);
-    // do the thing
+
+    if (triedLetters.indexOf(myLetter) >= 0) {
+      f.innerText =
+        "man, you'll hang faster with duplicate guesses, maybe that's what you prefer?";
+    }
+
     if (inThere != -1) {
       for (i = 0; i < inThere.length; i++) {
         z = inThere[i];
-        console.log(z);
 
         displayWord[z] = workingWord[z];
         d.innerText = displayWord.join("");
         // not working below
-        if (displayWord == workingWord) {
+        if (displayWord.join("") == workingWord.join("")) {
           myWins++;
           w.innerHTML = myWins;
           f.innerHTML = "you win, play again";
